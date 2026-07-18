@@ -103,7 +103,8 @@ export const searchGoogleBooks = createServerFn({ method: "GET" })
   .inputValidator((raw: unknown) => gbSearchInput.parse(raw))
   .handler(async ({ data }): Promise<GoogleBookResult[]> => {
     const gbKey = process.env.GOOGLE_BOOKS_API_KEY;
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(data.query)}&maxResults=10&printType=books${gbKey ? `&key=${gbKey}` : ""}`;
+    if (!gbKey) throw new Error("DEBUG: GOOGLE_BOOKS_API_KEY is not set in this environment.");
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(data.query)}&maxResults=10&printType=books&key=${gbKey}`;
     const res = await fetch(url);
     const json = (await res.json()) as {
       error?: { code?: number; message?: string };
