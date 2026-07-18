@@ -102,7 +102,8 @@ export const searchGoogleBooks = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => gbSearchInput.parse(raw))
   .handler(async ({ data }): Promise<GoogleBookResult[]> => {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(data.query)}&maxResults=10&printType=books`;
+    const gbKey = process.env.GOOGLE_BOOKS_API_KEY;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(data.query)}&maxResults=10&printType=books${gbKey ? `&key=${gbKey}` : ""}`;
     const res = await fetch(url);
     const json = (await res.json()) as {
       error?: { code?: number; message?: string };
